@@ -17,7 +17,7 @@ app = FastAPI()
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
 
 print("Model yükleniyor...")
-duygu_analizi = pipeline("sentiment-analysis", model="savasy/bert-base-turkish-sentiment-cased", local_files_only=True)
+duygu_analizi = pipeline("sentiment-analysis", model="savasy/bert-base-turkish-sentiment-cased")
 
 class AnalizIstegi(BaseModel):
     url: str
