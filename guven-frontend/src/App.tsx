@@ -1,5 +1,5 @@
-import React, { useState } from "react"
-import { X, Store, Star, MessageSquare, ArrowLeft, Link } from "lucide-react"
+import { useState } from "react"
+import { X, Store, Star, MessageSquare, ArrowLeft } from "lucide-react"
 
 type Seller = {
   id: string
