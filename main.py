@@ -3,6 +3,7 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from playwright.sync_api import sync_playwright
+from playwright_stealth import Stealth
 from transformers import pipeline
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
@@ -47,8 +48,59 @@ def bot_filtresi(yorumlar):
 @app.post("/analiz-et")
 def analiz_et(istek: AnalizIstegi):
     with sync_playwright() as p:
-        browser = p.chromium.launch(headless=False, channel="chrome")
-        page = browser.new_page()
+        browser = p.chromium.launch(
+            headless=True,
+            args=[
+                "--disable-blink-features=AutomationControlled",
+                "--no-sandbox",
+                "--disable-dev-shm-usage",
+                "--disable-web-security",
+                "--disable-features=IsolateOrigins,site-per-process",
+            ]
+        )
+
+        context = browser.new_context(
+            user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+            viewport={"width": 1920, "height": 1080},
+            locale="tr-TR",
+            timezone_id="Europe/Istanbul",
+            java_script_enabled=True,
+        )
+
+        page = context.new_page()
+
+        # --- Stealth kütüphanesi: WebGL, canvas, font, codec parmak izlerini gizle ---
+        stealth = Stealth(
+            navigator_languages_override=("tr-TR", "tr"),
+            navigator_platform_override="Win32",
+        )
+        stealth.apply_stealth_sync(page)
+
+        # --- Ekstra Stealth JS: Ek bot parmak izlerini gizle ---
+        page.add_init_script("""
+            // 1. navigator.webdriver bayrağını kaldır
+            Object.defineProperty(navigator, 'webdriver', { get: () => false });
+
+            // 2. chrome.runtime sahte objesi oluştur
+            window.chrome = { runtime: {} };
+
+            // 3. Permissions API'yi maskele
+            const originalQuery = window.navigator.permissions.query;
+            window.navigator.permissions.query = (parameters) =>
+                parameters.name === 'notifications'
+                    ? Promise.resolve({ state: Notification.permission })
+                    : originalQuery(parameters);
+
+            // 4. Plugins dizisini doldur (boş dizi = bot sinyali)
+            Object.defineProperty(navigator, 'plugins', {
+                get: () => [1, 2, 3, 4, 5],
+            });
+
+            // 5. Dil ayarlarını gerçekçi yap
+            Object.defineProperty(navigator, 'languages', {
+                get: () => ['tr-TR', 'tr', 'en-US', 'en'],
+            });
+        """)
         
         try:
             url = istek.url.lower()

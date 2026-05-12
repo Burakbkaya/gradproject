@@ -1,4 +1,5 @@
 import time
+import random
 
 def scrape_trendyol(page, url):
     print(f"Trendyol süreci başladı: {url}")
@@ -7,7 +8,7 @@ def scrape_trendyol(page, url):
     try:
         # Sayfayı yükle
         page.goto(url, wait_until="networkidle", timeout=60000)
-        page.wait_for_timeout(3000)
+        page.wait_for_timeout(random.randint(2000, 4000))
         
         # Pop-up temizliği
         page.keyboard.press("Escape")
@@ -31,7 +32,7 @@ def scrape_trendyol(page, url):
 
                     if locator.count() > 0:
                         locator.scroll_into_view_if_needed()
-                        page.wait_for_timeout(1500)
+                        page.wait_for_timeout(random.randint(1000, 2500))
 
                         try:
                             # Normal click
@@ -61,7 +62,7 @@ def scrape_trendyol(page, url):
                         print(f"Hedef URL: {review_url}")
 
                         page.goto(review_url, wait_until="networkidle")
-                        page.wait_for_timeout(3000)
+                        page.wait_for_timeout(random.randint(2500, 4500))
 
         except Exception as e:
             print(f"Buton tıklama hatası: {e}")
@@ -80,7 +81,7 @@ def scrape_trendyol(page, url):
 
         print("Trendyol: Sıralama başarıyla değiştirildi.")
 
-        page.wait_for_timeout(3000)
+        page.wait_for_timeout(random.randint(2000, 4000))
 
     except Exception as e:
         print(f"Trendyol: Sıralama yapılamadı (Yorum yok veya buton bulunamadı).")
@@ -90,10 +91,10 @@ def scrape_trendyol(page, url):
 
     for i in range(1, 151):
 
-        # Daha güçlü scroll
-        page.mouse.wheel(0, 2500)
+        # İnsan benzeri kaydırma: rastgele mesafe ve hız
+        page.mouse.wheel(0, random.randint(1800, 3200))
 
-        page.wait_for_timeout(1200)
+        page.wait_for_timeout(random.randint(800, 1800))
 
         if i % 5 == 0:
 

@@ -1,4 +1,5 @@
 import time
+import random
 
 def scrape_n11(page, url):
     print(f"n11 süreci başladı: {url}")
@@ -9,7 +10,7 @@ def scrape_n11(page, url):
     try:
         print("n11: Tüm yorumlar sayfasına geçiliyor...")
         page.click(".product-reviews__link", timeout=7000)
-        page.wait_for_timeout(3000)
+        page.wait_for_timeout(random.randint(2000, 4000))
     except Exception as e:
         print("n11: Yorumlar sekmesi zaten açık olabilir veya buton bulunamadı.")
 
@@ -23,8 +24,8 @@ def scrape_n11(page, url):
     for i in range(max_scroll):
         page.keyboard.press("PageDown")
         
-        # Standart yükleme beklemesi
-        page.wait_for_timeout(1200) 
+        # İnsan benzeri bekleme süresi
+        page.wait_for_timeout(random.randint(800, 1800)) 
         
         # Sayfada kaç yorum kutusu var kontrol et
         current_count = page.locator(".review-card").count()
@@ -37,7 +38,7 @@ def scrape_n11(page, url):
         else:
             # Yeni veri gelmedi, internet yavaş olabilir. Ekstradan 2.5 saniye bekle.
             print("Yeni veri bekleniyor, bağlantı yavaş olabilir...")
-            page.wait_for_timeout(2500)
+            page.wait_for_timeout(random.randint(2000, 3500))
             no_change_count += 1
             
             # n11 özel: Bazen "Daha Fazla Göster" butonuna basmak gerekebilir
@@ -46,7 +47,7 @@ def scrape_n11(page, url):
                 if more_button.is_visible():
                     more_button.click()
                     print("n11: 'Daha Fazla Göster' butonuna tıklandı.")
-                    page.wait_for_timeout(2000)
+                    page.wait_for_timeout(random.randint(1500, 3000))
                     no_change_count = 0 # Butona basıldıysa sayacı sıfırla
             except:
                 pass

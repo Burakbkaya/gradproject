@@ -1,4 +1,5 @@
 import time
+import random
 
 def scrape_hepsiburada(page, url):
     print(f"Hepsiburada süreci başladı: {url}")
@@ -6,12 +7,12 @@ def scrape_hepsiburada(page, url):
     # 1. Giriş ve Hazırlık
     try:
         page.goto(url, wait_until="domcontentloaded", timeout=60000)
-        page.wait_for_timeout(2000)
+        page.wait_for_timeout(random.randint(1500, 3000))
         
         review_link = page.locator('[data-test-id="has-review"] a').first
         if review_link.is_visible():
             review_link.click()
-            page.wait_for_timeout(3000)
+            page.wait_for_timeout(random.randint(2000, 4000))
         elif "/yorumlari" not in url:
             hedef_url = url.split("-p-")[0] + "-yorumlari"
             page.goto(hedef_url, wait_until="networkidle")
@@ -21,9 +22,9 @@ def scrape_hepsiburada(page, url):
     # 2. Sıralama
     try:
         page.click('[class*="hermes-Sort-module-VANnZ3"]', timeout=5000)
-        page.wait_for_timeout(1000)
+        page.wait_for_timeout(random.randint(800, 1500))
         page.locator('text="En yeni değerlendirme"').first.click(force=True)
-        page.wait_for_timeout(3000)
+        page.wait_for_timeout(random.randint(2000, 4000))
     except:
         pass
 
@@ -37,8 +38,8 @@ def scrape_hepsiburada(page, url):
         
         # Sayfayı kaydır ve yorumların yüklenmesini bekle
         for _ in range(6):
-            page.mouse.wheel(0, 1000)
-            page.wait_for_timeout(600)
+            page.mouse.wheel(0, random.randint(700, 1300))
+            page.wait_for_timeout(random.randint(400, 900))
 
         # Kartların DOM'da belirmesini bekle
         try:
@@ -77,11 +78,11 @@ def scrape_hepsiburada(page, url):
         # Rakam varsa tıkla
         print(f"Hepsiburada: {target_page}. sayfaya geçiliyor...")
         next_page_btn.scroll_into_view_if_needed()
-        page.wait_for_timeout(500)
+        page.wait_for_timeout(random.randint(300, 700))
         next_page_btn.click(force=True)
         
         current_page = target_page
-        page.wait_for_timeout(4000) # Yeni sayfanın yüklenmesi için zaman tanı
+        page.wait_for_timeout(random.randint(3000, 5000)) # Yeni sayfanın yüklenmesi için zaman tanı
         page.keyboard.press("Home")
 
     # --- 5. DEĞERLENDİRME ÇIKTI ---
